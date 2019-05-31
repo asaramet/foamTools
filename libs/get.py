@@ -2,7 +2,7 @@
 
 import os
 
-__all__ = ['reportFile', 'caseFolder', 'keyword', 'testIt']
+__all__ = ['reportFile', 'caseFolder', 'keyword']
 
 def reportFile(case):
   return "report_" + os.path.basename(case) + ".txt"

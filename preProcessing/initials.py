@@ -18,7 +18,6 @@ def help():
       -h                  Show this message
       -f [FOLDER PATH]    Specify case folder as a string "FOLDER PATH"
 
-
     EXAMPLES:
       Run pre-processing on '/home/my_case':
 
@@ -31,7 +30,6 @@ def read(case):
   print("TODO: Scan and log initial conditions in:", zeroFolder)
 
 def main(argv):
-  #sys.path.append('..')
   caseFolder = "../../cleanCase"
   try:
     opts, args = getopt.getopt(argv, "f:h")

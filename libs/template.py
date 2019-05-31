@@ -3,6 +3,11 @@
 import sys, getopt, os
 from string import Template
 
+__all__ = ['read']
+
+sys.path.append(sys.path[0] + '/..')
+from libs import get
+
 def help():
   return Template('''
     Pre-processing an OpenFOAM case folder.
@@ -11,25 +16,23 @@ def help():
 
     OPTIONS:
       -h                  Show this message
-      -c [FOLDER PATH]    Specify case folder as a string "FOLDER PATH"
-
+      -f [FOLDER PATH]    Specify case folder as a string "FOLDER PATH"
 
     EXAMPLES:
       Run pre-processing on '/home/my_case':
 
-        ${app} -c '/home/my_case'
+        ${app} -f '/home/my_case'
   ''').substitute(app=sys.argv[0])
 
-def readCase(case):
-  if not os.path.exists(case):
-    print ("ERROR: Wrong case folder specified: ", case)
-    return
-  print (case)
+def read(case):
+  zeroFolder = get.caseFolder(case, '0')
+  if zeroFolder == -1: return
+  print("TODO: Just template:", zeroFolder)
 
 def main(argv):
-  caseFolder = "../cleanCase"
+  caseFolder = "../../cleanCase"
   try:
-    opts, args = getopt.getopt(argv, "c:hp")
+    opts, args = getopt.getopt(argv, "f:h")
   except getopt.GetoptError:
     print ("ERROR: Wrong option,", sys.argv[1], "for:", sys.argv[0])
     sys.exit(2)
@@ -37,10 +40,10 @@ def main(argv):
     if opt == "-h":
       print (help())
       sys.exit(0)
-    if opt == "-c":
+    if opt == "-f":
       caseFolder = arg
 
-  readCase(caseFolder)
+  read(caseFolder)
 
 if __name__ == "__main__":
   main(sys.argv[1:])
