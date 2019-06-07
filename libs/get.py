@@ -17,9 +17,17 @@ def caseFolder(case, subFolder=""):
     return -1
   return folder
 
+def systemDict(case, systemDict='controlDict'):
+  systemFolder = caseFolder(case, "system")
+  if systemFolder == -1: return -1
+  dict = os.path.join(systemFolder, systemDict)
+  if os.path.isfile(dict): return dict
+  print ("ERROR:", dict, "doesn't exist!")
+  return -1
+
 def keyword(dict, key):
   if not os.path.exists(dict):
-    print ("ERROR: ", controlDict, "not found")
+    print ("ERROR: ", dict, "not found")
     return -1
   with open(dict, 'r') as file:
     for line in file:
@@ -30,3 +38,13 @@ def keyword(dict, key):
           value = value[:valueSemiColumn]
         return [key, value]
   return [-1, "not defined"]
+
+def checkRunCompleted(case):
+  # return 1 if endTime is defined and folder exists
+  controlDict = systemDict(case, 'controlDict')
+  if controlDict == -1: return [-1, "no controlDict"]
+  endTime = keyword(controlDict, 'endTime')
+  if endTime[0] == -1: return [-1, "no endTime"]
+  if os.path.isdir(os.path.join(case, endTime[1])):
+    return [1, endTime[1]]
+  return [-1, "not completed"]

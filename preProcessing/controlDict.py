@@ -25,19 +25,23 @@ def help():
         ${app} -f '/home/my_case'
   ''').substitute(app=sys.argv[0])
 
-def read(case):
-  systemFolder = get.caseFolder(case, "system")
-  if systemFolder == -1: return
-  controlDict = os.path.join(systemFolder, 'controlDict')
-
-  report = Template('''=== controlDict options:
+def report(controlDict):
+  return Template('''=== controlDict options:
     Application name [application]: ${application}
-    Simulation starting from [startFrom]: ${startFrom}''').substitute(
+    Simulation starting from [startFrom]: ${startFrom}\n''').substitute(
     application = get.keyword(controlDict, 'application')[1],
     startFrom = get.keyword(controlDict, 'startFrom')[1]
   )
 
-  with open(get.reportFile(case), 'w') as file: file.write(report)
+def read(case):
+  controlDict = get.systemDict(case, 'controlDict')
+  if controlDict == -1: return
+
+  with open(get.reportFile(case), 'w') as file:
+    file.write(report(controlDict))
+    completeRun = get.checkRunCompleted(case)
+    if completeRun[0] == 1:
+      file.write("\nSimulation successfuly completed at: t - " + completeRun[1] + "!\n")
   print (get.reportFile(case), "updated!")
 
 def main(argv):
