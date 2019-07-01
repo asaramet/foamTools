@@ -28,6 +28,8 @@ def read(case):
   zeroFolder = get.caseFolder(case, '0')
   if zeroFolder == -1: return
   print("TODO: Scan and log initial conditions in:", zeroFolder)
+  k_file = os.path.join(zeroFolder, 'k')
+  print("dimensions: ", get.dimensions(k_file))
 
 def main(argv):
   caseFolder = "../../cleanCase"

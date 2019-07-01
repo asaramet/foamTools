@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os
+import os, re
 
 __all__ = ['reportFile', 'caseFolder', 'keyword']
 
@@ -38,6 +38,28 @@ def keyword(dict, key):
           value = value[:valueSemiColumn]
         return [key, value]
   return [-1, "not defined"]
+
+def powerof(x, power):
+  if power == 0: return 1
+  return x + "^" + str(power)
+
+def dimensions(file):
+  if not os.path.isfile(file):
+    print ("ERROR: ", file, "not found")
+    return -1
+  units = ["kg", "m", "s", "K", "mol", "A", "cd"]
+  with open(file, 'r') as prop_file:
+    for line in prop_file:
+      if line.find('dimensions' + ' ') != -1:
+        values = re.sub('[;\[\]]','', line[len('dimensions'):].strip()).split()
+        mesure, index = "", 0
+        while index < len(values):
+          power_str = powerof(units[index], int(values[index]))
+          if power_str != 1: mesure += power_str + ' '
+          index += 1
+        return mesure
+  return -1
+
 
 def checkRunCompleted(case):
   # return 1 if endTime is defined and folder exists
