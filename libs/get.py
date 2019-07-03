@@ -25,6 +25,16 @@ def systemDict(case, systemDict='controlDict'):
   print ("ERROR:", dict, "doesn't exist!")
   return -1
 
+def checkRunCompleted(case):
+  # return 1 if endTime is defined and folder exists
+  controlDict = systemDict(case, 'controlDict')
+  if controlDict == -1: return [-1, "no controlDict"]
+  endTime = keyword(controlDict, 'endTime')
+  if endTime[0] == -1: return [-1, "no endTime"]
+  if os.path.isdir(os.path.join(case, endTime[1])):
+    return [1, endTime[1]]
+  return [-1, "not completed"]
+
 def keyword(dict, key):
   if not os.path.exists(dict):
     print ("ERROR: ", dict, "not found")
@@ -60,13 +70,15 @@ def dimensions(file):
         return mesure
   return -1
 
-
-def checkRunCompleted(case):
-  # return 1 if endTime is defined and folder exists
-  controlDict = systemDict(case, 'controlDict')
-  if controlDict == -1: return [-1, "no controlDict"]
-  endTime = keyword(controlDict, 'endTime')
-  if endTime[0] == -1: return [-1, "no endTime"]
-  if os.path.isdir(os.path.join(case, endTime[1])):
-    return [1, endTime[1]]
-  return [-1, "not completed"]
+def dictionaries(file):
+  if not os.path.isfile(file):
+    print("ERROR:", file, "not found")
+    return -1
+  return [
+    {"name": "outlet",
+     'data': [['type', 'inletOutlet'],
+        ['inletValue', '$internalField'],
+        ['value', '$internalField']]
+    },
+    {"name": "outlet", 'data': [['type', 'inletOutlet'], ['value', 'internalField']] }
+  ]

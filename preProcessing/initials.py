@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, getopt, os
+import sys, getopt, os, re
 from string import Template
 
 __all__ = ['read']
@@ -24,12 +24,23 @@ def help():
         ${app} -f '/home/my_case'
   ''').substitute(app=sys.argv[0])
 
+def getField(file):
+  with open(file, 'r') as zeroFile:
+    for line in zeroFile:
+      if (re.search("boundaryField*", line)):
+        print(line)
+
+
 def read(case):
   zeroFolder = get.caseFolder(case, '0')
   if zeroFolder == -1: return
-  print("TODO: Scan and log initial conditions in:", zeroFolder)
-  k_file = os.path.join(zeroFolder, 'k')
-  print("dimensions: ", get.dimensions(k_file))
+  print("=== Initial conditions ===")
+  for item in os.listdir(zeroFolder):
+    zeroFile = os.path.join(zeroFolder, item)
+    if os.path.isfile(zeroFile):
+      print(item, ':', get.dimensions(zeroFile))
+      print(getField(zeroFile))
+      #print(get.keyword(zeroFile, 'type'))
 
 def main(argv):
   caseFolder = "../../cleanCase"
