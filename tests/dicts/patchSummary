@@ -1,0 +1,72 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+Build  : 6-fa1285188035
+Exec   : patchSummary -time 0
+Date   : Jul 17 2019
+Time   : 18:34:49
+Host   : "uc1n996.localdomain"
+PID    : 31126
+I/O    : uncollated
+Case   : /pfs/data2/home/es/es_es/es_asaramet/OpenFOAM/motorBike
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 10)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Time = 0
+
+Valid fields:
+    volScalarField	nut
+    volVectorField	U
+    volScalarField	k
+    volScalarField	p
+    volScalarField	omega
+
+patch	: frontAndBack
+patch	: upperWall
+    scalar		nut		calculated
+    scalar		k		slip
+    scalar		p		slip
+    scalar		omega		slip
+    vector		U		slip
+
+patch	: inlet
+    scalar		nut		calculated
+    scalar		k		fixedValue
+    scalar		p		zeroGradient
+    scalar		omega		fixedValue
+    vector		U		fixedValue
+
+patch	: outlet
+    scalar		nut		calculated
+    scalar		k		inletOutlet
+    scalar		p		fixedValue
+    scalar		omega		inletOutlet
+    vector		U		inletOutlet
+
+wall	: lowerWall
+    scalar		nut		generic
+    scalar		k		generic
+    scalar		p		zeroGradient
+    scalar		omega		generic
+    vector		U		fixedValue
+
+group	: motorBikeGroup
+    scalar		nut		generic
+    scalar		k		generic
+    scalar		p		zeroGradient
+    scalar		omega		generic
+    vector		U		noSlip
+
+End
+

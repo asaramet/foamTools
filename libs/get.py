@@ -2,8 +2,6 @@
 
 import os, re
 
-__all__ = ['reportFile', 'caseFolder', 'keyword']
-
 def reportFile(case):
   return "report_" + os.path.basename(case) + ".txt"
 
@@ -70,10 +68,30 @@ def dimensions(file):
         return mesure
   return -1
 
+def fileSegment(file, start, end):
+  snippet, flag = '', -1
+  with open(file, 'r') as f:
+    for line in f:
+      snippet += line
+      if (re.search(start, line)):
+        snippet = line
+        flag = 1
+      if flag != -1 and re.search(end, line):
+          break
+  return snippet.split('\n')[1:-2]
+
 def dictionaries(file):
   if not os.path.isfile(file):
     print("ERROR:", file, "not found")
     return -1
+  print ('--- Get dictionaries in', file, '---')
+  with open(file, 'r') as d_file:
+    back, now = '', ''
+    for line in d_file:
+      back, now = now, line
+      if line.find('{') != -1:
+        print(back.split()[0])
+        print(now)
   return [
     {"name": "outlet",
      'data': [['type', 'inletOutlet'],

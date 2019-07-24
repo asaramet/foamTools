@@ -4,6 +4,7 @@ import unittest, os, sys
 
 sys.path.append(sys.path[0] + '/..')
 from libs import get
+from preProcessing import initials
 
 testsFolder=os.path.dirname(os.path.realpath(__file__))
 
@@ -23,7 +24,7 @@ class TestStringMethods(unittest.TestCase):
       s.split(2)
 
 class GetMethods(unittest.TestCase):
-  testDict = os.path.join(testsFolder, 'testDict')
+  testDict = os.path.join(testsFolder, 'dicts/testDict')
 
   def test_keyword(self):
     self.assertEqual(get.keyword(self.testDict, 'application'), ['application', 'simpleFoam'])
@@ -35,12 +36,27 @@ class GetMethods(unittest.TestCase):
     self.assertEqual(get.dimensions('testNonFile'), -1)
     self.assertEqual(get.dimensions(self.testDict), "kg^1 m^2 s^-2 K^-3 mol^3 A^4 cd^-4 " )
 
+  def test_fileSegment(self):
+    self.assertEqual(get.fileSegment(self.testDict, 'lowerWall', '}'),[ '    {',
+      '        type            kqRWallFunction;',
+      '        value           $internalField;'])
+
   def test_dictionaries(self):
     self.assertEqual(get.dictionaries('testNonFile'), -1)
     self.assertEqual(get.dictionaries(self.testDict), [
       {"name": "outlet", 'data': [['type', 'inletOutlet'], ['inletValue', '$internalField'], ['value', '$internalField']]},
       {"name": "outlet", 'data': [['type', 'inletOutlet'], ['value', 'internalField']]}
     ])
+
+class InitialsTest(unittest.TestCase):
+  patchSummaryDict = os.path.join(testsFolder, 'dicts/patchSummary')
+
+  def test_getPatches(self):
+    self.assertEqual(initials.getPatches(self.patchSummaryDict), {
+      'patches': ['frontAndBack', 'upperWall', 'inlet', 'outlet'],
+      'walls': ['lowerWall'],
+      'groups': ['motorBikeGroup']
+    })
 
 
 if __name__ == '__main__':

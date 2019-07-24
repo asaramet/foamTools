@@ -3,7 +3,7 @@
 import sys, getopt, os, re
 from string import Template
 
-__all__ = ['read']
+thisFolder = os.path.dirname(os.path.realpath(__file__))
 
 sys.path.append(sys.path[0] + '/..')
 from libs import get
@@ -24,23 +24,36 @@ def help():
         ${app} -f '/home/my_case'
   ''').substitute(app=sys.argv[0])
 
-def getField(file):
-  with open(file, 'r') as zeroFile:
-    for line in zeroFile:
-      if (re.search("boundaryField*", line)):
-        print(line)
+def getPatches(case):
+  # TODO: set file to output run from 'patchSummary -time 0'
+  file = os.path.join(thisFolder, '../tests/dicts/patchSummary')
+  dict = {'patches':[], 'walls':[], 'groups':[]}
+  with open(file, 'r') as patchSummary:
+    for line in patchSummary:
+      if (re.search("^patch", line)):
+        dict['patches'].append(line.split()[2])
+      if (re.search("^wall", line)):
+        dict['walls'].append(line.split()[2])
+      if (re.search("^group", line)):
+        dict['groups'].append(line.split()[2])
+  return dict
 
+def getFields(case):
+  # TODO: set file to output run from 'patchSummary -time 0'
+  file = os.path.join(thisFolder, '../tests/dicts/patchSummary')
+  fields = []
+  for line in get.fileSegment(file, '^Valid fields:', '^\n'):
+    fields.append(line.split('\t')[1])
+  return fields
+
+def fieldData(case):
+  # TODO: set file to output run from 'foamDictionary 0/k'
+  file = os.path.join(thisFolder, '../tests/dicts/foamDictionary_0_k')
+  print (getPatches(case))
+  print (getFields(case))
 
 def read(case):
-  zeroFolder = get.caseFolder(case, '0')
-  if zeroFolder == -1: return
-  print("=== Initial conditions ===")
-  for item in os.listdir(zeroFolder):
-    zeroFile = os.path.join(zeroFolder, item)
-    if os.path.isfile(zeroFile):
-      print(item, ':', get.dimensions(zeroFile))
-      print(getField(zeroFile))
-      #print(get.keyword(zeroFile, 'type'))
+  fieldData(case)
 
 def main(argv):
   caseFolder = "../../cleanCase"
