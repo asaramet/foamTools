@@ -79,24 +79,3 @@ def fileSegment(file, start, end):
       if flag != -1 and re.search(end, line):
           break
   return snippet.split('\n')[1:-2]
-
-def dictionaries(file):
-  if not os.path.isfile(file):
-    print("ERROR:", file, "not found")
-    return -1
-  print ('--- Get dictionaries in', file, '---')
-  with open(file, 'r') as d_file:
-    back, now = '', ''
-    for line in d_file:
-      back, now = now, line
-      if line.find('{') != -1:
-        print(back.split()[0])
-        print(now)
-  return [
-    {"name": "outlet",
-     'data': [['type', 'inletOutlet'],
-        ['inletValue', '$internalField'],
-        ['value', '$internalField']]
-    },
-    {"name": "outlet", 'data': [['type', 'inletOutlet'], ['value', 'internalField']] }
-  ]

@@ -6,7 +6,7 @@ from string import Template
 thisFolder = os.path.dirname(os.path.realpath(__file__))
 
 sys.path.append(sys.path[0] + '/..')
-from libs import get
+from libs import get, run
 
 def help():
   return Template('''
@@ -54,6 +54,7 @@ def fieldData(case):
 
 def read(case):
   fieldData(case)
+  print(run.openfoam('ls', case))
 
 def main(argv):
   caseFolder = "../../cleanCase"

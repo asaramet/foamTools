@@ -41,13 +41,6 @@ class GetMethods(unittest.TestCase):
       '        type            kqRWallFunction;',
       '        value           $internalField;'])
 
-  def test_dictionaries(self):
-    self.assertEqual(get.dictionaries('testNonFile'), -1)
-    self.assertEqual(get.dictionaries(self.testDict), [
-      {"name": "outlet", 'data': [['type', 'inletOutlet'], ['inletValue', '$internalField'], ['value', '$internalField']]},
-      {"name": "outlet", 'data': [['type', 'inletOutlet'], ['value', 'internalField']]}
-    ])
-
 class InitialsTest(unittest.TestCase):
   patchSummaryDict = os.path.join(testsFolder, 'dicts/patchSummary')
 
