@@ -4,13 +4,15 @@ import subprocess, re
 
 def openfoam(command, case='.'):
   # check if OpenFOAM is installed on the system
-  if (not re.search('OpenFOAM', subprocess.getoutput('foamVersion'))): return -1
+  if (subprocess.getoutput('echo ${FOAM_VERSION}') == ''):
+    print ('ERROR: OpenFOAM is not initiated')
+    return -1
 
-  return subprocess.getoutput(command)
+  return subprocess.getoutput('cd ' + case + ' && ' + command)
 
 
 def main():
-  print (openfoam('patchSummary'))
+  print (openfoam('ls', '$HOME'))
 
 if __name__ == '__main__':
   main()

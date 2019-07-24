@@ -7,6 +7,7 @@ thisFolder = os.path.dirname(os.path.realpath(__file__))
 
 sys.path.append(sys.path[0] + '/..')
 from libs import get, run
+from random import randint
 
 def help():
   return Template('''
@@ -40,10 +41,15 @@ def getPatches(case):
 
 def getFields(case):
   # TODO: set file to output run from 'patchSummary -time 0'
-  file = os.path.join(thisFolder, '../tests/dicts/patchSummary')
+  patchSummary = run.openfoam('patchSummary -time 0')
+  if patchSummary == -1: return -1
+  #file = os.path.join(thisFolder, '../tests/dicts/patchSummary')
+  file = os.path.join(case, 'tmp-ps-' + randint(10000, 999999))
+  with open(file, 'w') as temp: temp.write(patchSummary)
   fields = []
   for line in get.fileSegment(file, '^Valid fields:', '^\n'):
     fields.append(line.split('\t')[1])
+  os.remove(file)
   return fields
 
 def fieldData(case):
@@ -54,7 +60,7 @@ def fieldData(case):
 
 def read(case):
   fieldData(case)
-  print(run.openfoam('ls', case))
+  print (randint(10000, 999999))
 
 def main(argv):
   caseFolder = "../../cleanCase"
