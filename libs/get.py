@@ -79,3 +79,15 @@ def fileSegment(file, start, end):
       if flag != -1 and re.search(end, line):
           break
   return snippet.split('\n')[1:-2]
+
+def multipleStringSegment(multistring, start, end):
+  snippet, flag = '', -1
+  for line in multistring.split('\n'):
+    if (re.search(start, line)):
+      snippet, flag = '', 1
+    if flag != -1:
+      if end == '':
+        if line == end: break
+      elif re.search(end, line): break
+    snippet += line + '\n'
+  return snippet

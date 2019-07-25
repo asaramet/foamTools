@@ -51,6 +51,17 @@ class InitialsTest(unittest.TestCase):
       'groups': ['motorBikeGroup']
     })
 
+  def test_getFields(self):
+    self.assertEqual(initials.getFields(
+'''Valid fields:
+    volScalarField	nut
+    volVectorField	U
+    volScalarField	k
+    volScalarField	p
+    volScalarField	omega
+
+patch	: frontAndBack'''), ['nut', 'U', 'k', 'p', 'omega'])
+
 
 if __name__ == '__main__':
   unittest.main()

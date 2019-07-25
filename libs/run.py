@@ -8,8 +8,14 @@ def openfoam(command, case='.'):
     print ('ERROR: OpenFOAM is not initiated')
     return -1
 
-  return subprocess.getoutput('cd ' + case + ' && ' + command)
-
+  stdout = subprocess.getoutput('cd ' + case + ' && ' + command)
+  if re.search('FOAM FATAL ERROR', stdout):
+    print ("ERROR:", command, "failed in", case)
+    return -1
+  if re.search('command not found', stdout):
+    print ("ERROR: OpenFOAM not initialized, '", command, "' not found")
+    return -1
+  return stdout
 
 def main():
   print (openfoam('ls', '$HOME'))

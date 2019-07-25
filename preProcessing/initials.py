@@ -25,42 +25,52 @@ def help():
         ${app} -f '/home/my_case'
   ''').substitute(app=sys.argv[0])
 
-def getPatches(case):
-  # TODO: set file to output run from 'patchSummary -time 0'
-  file = os.path.join(thisFolder, '../tests/dicts/patchSummary')
+def getPatches(patchSummary):
   dict = {'patches':[], 'walls':[], 'groups':[]}
-  with open(file, 'r') as patchSummary:
-    for line in patchSummary:
-      if (re.search("^patch", line)):
-        dict['patches'].append(line.split()[2])
-      if (re.search("^wall", line)):
-        dict['walls'].append(line.split()[2])
-      if (re.search("^group", line)):
-        dict['groups'].append(line.split()[2])
+  for line in patchSummary.split('\n'):
+    if (re.search("^patch", line)):
+      dict['patches'].append(line.split()[2])
+    if (re.search("^wall", line)):
+      dict['walls'].append(line.split()[2])
+    if (re.search("^group", line)):
+      dict['groups'].append(line.split()[2])
   return dict
 
-def getFields(case):
-  # TODO: set file to output run from 'patchSummary -time 0'
-  patchSummary = run.openfoam('patchSummary -time 0')
-  if patchSummary == -1: return -1
-  #file = os.path.join(thisFolder, '../tests/dicts/patchSummary')
-  file = os.path.join(case, 'tmp-ps-' + randint(10000, 999999))
-  with open(file, 'w') as temp: temp.write(patchSummary)
+def getFields(patchSummary):
   fields = []
-  for line in get.fileSegment(file, '^Valid fields:', '^\n'):
+  for line in get.multipleStringSegment(patchSummary, '^Valid fields:', '').split('\n')[1:-1]:
     fields.append(line.split('\t')[1])
-  os.remove(file)
   return fields
 
-def fieldData(case):
+def fieldData(field, case='.'):
   # TODO: set file to output run from 'foamDictionary 0/k'
-  file = os.path.join(thisFolder, '../tests/dicts/foamDictionary_0_k')
-  print (getPatches(case))
-  print (getFields(case))
+  foamDictionary = run.openfoam('foamDictionary 0/' + field, case)
+  if foamDictionary == -1: return -1
+
+  return foamDictionary
+
+def collectData(case):
+  patchSummary = run.openfoam('patchSummary -time 0', case)
+  if patchSummary == -1: return -1
+
+  print (getPatches(patchSummary))
+  print (getFields(patchSummary))
 
 def read(case):
-  fieldData(case)
-  print (randint(10000, 999999))
+  patchSummary = '''Time = 0
+
+Valid fields:
+    volScalarField	nut
+    volVectorField	U
+    volScalarField	k
+    volScalarField	p
+    volScalarField	omega
+
+patch	: frontAndBack
+patch	: upperWall'''
+
+  collectData(case)
+
 
 def main(argv):
   caseFolder = "../../cleanCase"
