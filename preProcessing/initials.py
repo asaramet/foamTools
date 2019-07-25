@@ -42,12 +42,21 @@ def getFields(patchSummary):
     fields.append(line.split('\t')[1])
   return fields
 
-def fieldData(field, case='.'):
-  # TODO: set file to output run from 'foamDictionary 0/k'
-  foamDictionary = run.openfoam('foamDictionary 0/' + field, case)
-  if foamDictionary == -1: return -1
+def fieldData(fieldDict):
+  data = get.multipleStringSegment(fieldDict, 'boundaryField', '^}')
+  patches, patch = [], ''
+  for line in data.split('\n')[2:-1]:
+    if re.search('{', line):
+      patches.append(patch.strip())
+    patch = line
 
-  return foamDictionary
+  patch_data = []
+  for patch in patches:
+    dict = {patch:{}}
+    for item in get.multipleStringSegment(data, patch, '}').split('\n')[2:-1]:
+      dict[patch][item.split()[0]] = item.split()[1:]
+    patch_data.append(dict)
+  return patch_data
 
 def collectData(case):
   patchSummary = run.openfoam('patchSummary -time 0', case)
@@ -57,19 +66,13 @@ def collectData(case):
   print (getFields(patchSummary))
 
 def read(case):
-  patchSummary = '''Time = 0
-
-Valid fields:
-    volScalarField	nut
-    volVectorField	U
-    volScalarField	k
-    volScalarField	p
-    volScalarField	omega
-
-patch	: frontAndBack
-patch	: upperWall'''
-
-  collectData(case)
+  #collectData(case)
+  foamDictionary = run.openfoam('foamDictionary 0/k', case)
+  if foamDictionary == -1:
+    foamDict = os.path.join(thisFolder, '../tests/dicts/foamDictionary_0_k')
+    with open(foamDict, 'r') as f:
+      foamDictionary = f.read()
+  print(fieldData(foamDictionary))
 
 
 def main(argv):

@@ -5,7 +5,7 @@ import subprocess, re
 def openfoam(command, case='.'):
   # check if OpenFOAM is installed on the system
   if (subprocess.getoutput('echo ${FOAM_VERSION}') == ''):
-    print ('ERROR: OpenFOAM is not initiated')
+    print ('ERROR: OpenFOAM not found on the system')
     return -1
 
   stdout = subprocess.getoutput('cd ' + case + ' && ' + command)

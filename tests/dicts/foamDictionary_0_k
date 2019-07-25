@@ -1,3 +1,11 @@
+FoamFile
+{
+    version         2;
+    format          ascii;
+    class           volScalarField;
+    object          k;
+}
+
 flowVelocity    ( 20 0 0 );
 
 pressure        0;
@@ -37,10 +45,6 @@ boundaryField
     {
         type            nonuniformTransformCyclic;
     }
-    cyclicRepeatAMI
-    {
-        type            cyclicRepeatAMI;
-    }
     processor
     {
         type            processor;
@@ -62,6 +66,10 @@ boundaryField
     wedge
     {
         type            wedge;
+    }
+    overset
+    {
+        type            overset;
     }
     inlet
     {

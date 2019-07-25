@@ -43,24 +43,36 @@ class GetMethods(unittest.TestCase):
 
 class InitialsTest(unittest.TestCase):
   patchSummaryDict = os.path.join(testsFolder, 'dicts/patchSummary')
+  with open(patchSummaryDict, 'r') as f:
+    patchSummary = f.read()
+
+  foamDictionary = os.path.join(testsFolder, 'dicts/foamDictionary_0_k')
 
   def test_getPatches(self):
-    self.assertEqual(initials.getPatches(self.patchSummaryDict), {
+    self.assertEqual(initials.getPatches(self.patchSummary), {
       'patches': ['frontAndBack', 'upperWall', 'inlet', 'outlet'],
       'walls': ['lowerWall'],
       'groups': ['motorBikeGroup']
     })
 
   def test_getFields(self):
-    self.assertEqual(initials.getFields(
-'''Valid fields:
-    volScalarField	nut
-    volVectorField	U
-    volScalarField	k
-    volScalarField	p
-    volScalarField	omega
+    self.assertEqual(initials.getFields(self.patchSummary), ['nut', 'U', 'k', 'p', 'omega'])
 
-patch	: frontAndBack'''), ['nut', 'U', 'k', 'p', 'omega'])
+  def test_fieldData(self):
+    self.assertEqual(initials.fieldData(self.foamDictionary),
+      [{'cyclic': {'type': ['cyclic;']}}, {'cyclicAMI': {'type': ['cyclicAMI;']}},
+      {'cyclicACMI': {'type': ['cyclicACMI;'], 'value': ['uniform', '0.24;']}},
+      {'cyclicSlip': {'type': ['cyclicSlip;']}}, {'empty': {'type': ['empty;']}},
+      {'nonuniformTransformCyclic': {'type': ['nonuniformTransformCyclic;']}},
+      {'processor': {'type': ['processor;'], 'value': ['uniform', '0.24;']}},
+      {'processorCyclic': {'type': ['processorCyclic;'], 'value': ['uniform', '0.24;']}},
+      {'symmetryPlane': {'type': ['symmetryPlane;']}}, {'symmetry': {'type': ['symmetryPlane;']}},
+      {'wedge': {'type': ['wedge;']}}, {'overset': {'type': ['overset;']}},
+      {'inlet': {'type': ['fixedValue;'], 'value': ['uniform', '0.24;']}},
+      {'outlet': {'type': ['inletOutlet;'], 'inletValue': ['uniform', '0.24;'], 'value': ['uniform', '0.24;']}},
+      {'lowerWall': {'type': ['kqRWallFunction;'], 'value': ['uniform', '0.24;']}},
+      {'motorBikeGroup': {'type': ['kqRWallFunction;'], 'value': ['uniform', '0.24;']}},
+      {'upperWall': {'type': ['slip;']}}, {'frontAndBack': {'type': ['slip;']}}])
 
 
 if __name__ == '__main__':
