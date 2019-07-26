@@ -51,21 +51,18 @@ def powerof(x, power):
   if power == 0: return 1
   return x + "^" + str(power)
 
-def dimensions(file):
-  if not os.path.isfile(file):
-    print ("ERROR: ", file, "not found")
-    return -1
+def dimensions(text):
   units = ["kg", "m", "s", "K", "mol", "A", "cd"]
-  with open(file, 'r') as prop_file:
-    for line in prop_file:
-      if line.find('dimensions' + ' ') != -1:
-        values = re.sub('[;\[\]]','', line[len('dimensions'):].strip()).split()
-        mesure, index = "", 0
-        while index < len(values):
-          power_str = powerof(units[index], int(values[index]))
-          if power_str != 1: mesure += power_str + ' '
-          index += 1
-        return mesure
+  for line in text.split('\n'):
+    if line.find('dimensions' + ' ') != -1:
+      values = re.sub('[;\[\]]','', line[len('dimensions'):].strip()).split()
+      mesure, index = "", 0
+      while index < len(values):
+        power_str = powerof(units[index], int(values[index]))
+        if power_str != 1: mesure += power_str + ' '
+        index += 1
+      return mesure
+  print("ERROR: no 'dimensions' found in", text)
   return -1
 
 def fileSegment(file, start, end):

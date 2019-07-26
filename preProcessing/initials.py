@@ -50,30 +50,53 @@ def fieldData(fieldDict):
       patches.append(patch.strip())
     patch = line
 
-  patch_data = []
+  patch_data = {}
   for patch in patches:
-    dict = {patch:{}}
+    patch_data[patch] = {}
     for item in get.multipleStringSegment(data, patch, '}').split('\n')[2:-1]:
-      dict[patch][item.split()[0]] = item.split()[1:]
-    patch_data.append(dict)
+      patch_data[patch][item.split()[0]] = item.split()[1:]
   return patch_data
+
+def fieldInfo(field, case):
+  patchSummary = run.openfoam('patchSummary -time 0', case)
+  if patchSummary == -1: return -1
+
+  fieldFile = os.path.join(case, '0/' + field)
+  if not os.path.isfile(fieldFile):
+    fieldFile = os.path.join(case, '0/' + field + '.orig')
+  if not os.path.isfile(fieldFile):
+    print("ERROR: Couldn't get the initial conditions file for", field)
+    return -1
+  foamDictionary = run.openfoam('foamDictionary ' + fieldFile, case)
+  if foamDictionary == -1: return -1
+
+  walls = getPatches(patchSummary)
+  field_data = fieldData(foamDictionary)
+
+  text = "Field: " + field + '\t' + get.dimensions(foamDictionary)
+
+  for section in walls.keys():
+    text += '\n  ' + section[0].upper() + section[1:] + ':'
+    for patch in walls[section]:
+      text += '\n    ' + patch + ':'
+      for key, value in field_data[patch].items():
+        text += '\n      ' + key + ':\t\t' + ' '.join(value)
+  text += '\n==========////==========\n'
+  return text
 
 def collectData(case):
   patchSummary = run.openfoam('patchSummary -time 0', case)
   if patchSummary == -1: return -1
 
-  print (getPatches(patchSummary))
-  print (getFields(patchSummary))
+  text = '==> Initial conditions:'
+  text += '\n==========////==========\n'
+  for field in getFields(patchSummary):
+    text += fieldInfo(field, case)
+
+  return text
 
 def read(case):
-  #collectData(case)
-  foamDictionary = run.openfoam('foamDictionary 0/k', case)
-  if foamDictionary == -1:
-    foamDict = os.path.join(thisFolder, '../tests/dicts/foamDictionary_0_k')
-    with open(foamDict, 'r') as f:
-      foamDictionary = f.read()
-  print(fieldData(foamDictionary))
-
+  print (collectData(case))
 
 def main(argv):
   caseFolder = "../../cleanCase"

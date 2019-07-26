@@ -25,6 +25,8 @@ class TestStringMethods(unittest.TestCase):
 
 class GetMethods(unittest.TestCase):
   testDict = os.path.join(testsFolder, 'dicts/testDict')
+  with open(testDict, 'r') as f:
+    testData = f.read()
 
   def test_keyword(self):
     self.assertEqual(get.keyword(self.testDict, 'application'), ['application', 'simpleFoam'])
@@ -34,7 +36,7 @@ class GetMethods(unittest.TestCase):
 
   def test_dimensions(self):
     self.assertEqual(get.dimensions('testNonFile'), -1)
-    self.assertEqual(get.dimensions(self.testDict), "kg^1 m^2 s^-2 K^-3 mol^3 A^4 cd^-4 " )
+    self.assertEqual(get.dimensions(self.testData), "kg^1 m^2 s^-2 K^-3 mol^3 A^4 cd^-4 " )
 
   def test_fileSegment(self):
     self.assertEqual(get.fileSegment(self.testDict, 'lowerWall', '}'),[ '    {',
@@ -46,7 +48,9 @@ class InitialsTest(unittest.TestCase):
   with open(patchSummaryDict, 'r') as f:
     patchSummary = f.read()
 
-  foamDictionary = os.path.join(testsFolder, 'dicts/foamDictionary_0_k')
+  foamDict = os.path.join(testsFolder, 'dicts/foamDictionary_0_k')
+  with open(foamDict, 'r') as f:
+    foamDictionary = f.read()
 
   def test_getPatches(self):
     self.assertEqual(initials.getPatches(self.patchSummary), {
@@ -60,20 +64,20 @@ class InitialsTest(unittest.TestCase):
 
   def test_fieldData(self):
     self.assertEqual(initials.fieldData(self.foamDictionary),
-      [{'cyclic': {'type': ['cyclic;']}}, {'cyclicAMI': {'type': ['cyclicAMI;']}},
-      {'cyclicACMI': {'type': ['cyclicACMI;'], 'value': ['uniform', '0.24;']}},
-      {'cyclicSlip': {'type': ['cyclicSlip;']}}, {'empty': {'type': ['empty;']}},
-      {'nonuniformTransformCyclic': {'type': ['nonuniformTransformCyclic;']}},
-      {'processor': {'type': ['processor;'], 'value': ['uniform', '0.24;']}},
-      {'processorCyclic': {'type': ['processorCyclic;'], 'value': ['uniform', '0.24;']}},
-      {'symmetryPlane': {'type': ['symmetryPlane;']}}, {'symmetry': {'type': ['symmetryPlane;']}},
-      {'wedge': {'type': ['wedge;']}}, {'overset': {'type': ['overset;']}},
-      {'inlet': {'type': ['fixedValue;'], 'value': ['uniform', '0.24;']}},
-      {'outlet': {'type': ['inletOutlet;'], 'inletValue': ['uniform', '0.24;'], 'value': ['uniform', '0.24;']}},
-      {'lowerWall': {'type': ['kqRWallFunction;'], 'value': ['uniform', '0.24;']}},
-      {'motorBikeGroup': {'type': ['kqRWallFunction;'], 'value': ['uniform', '0.24;']}},
-      {'upperWall': {'type': ['slip;']}}, {'frontAndBack': {'type': ['slip;']}}])
-
+    {'cyclic': {'type': ['cyclic;']}, 'cyclicAMI': {'type': ['cyclicAMI;']},
+    'cyclicACMI': {'type': ['cyclicACMI;'], 'value': ['uniform', '0.24;']},
+    'cyclicSlip': {'type': ['cyclicSlip;']}, 'empty': {'type': ['empty;']},
+    'nonuniformTransformCyclic': {'type': ['nonuniformTransformCyclic;']},
+    'processor': {'type': ['processor;'], 'value': ['uniform', '0.24;']},
+    'processorCyclic': {'type': ['processorCyclic;'], 'value': ['uniform', '0.24;']},
+    'symmetryPlane': {'type': ['symmetryPlane;']}, 'symmetry': {'type': ['symmetryPlane;']},
+    'wedge': {'type': ['wedge;']}, 'overset': {'type': ['overset;']},
+    'inlet': {'type': ['fixedValue;'], 'value': ['uniform', '0.24;']},
+    'outlet': {'type': ['inletOutlet;'], 'inletValue': ['uniform', '0.24;'],
+    'value': ['uniform', '0.24;']}, 'lowerWall': {'type': ['kqRWallFunction;'],
+    'value': ['uniform', '0.24;']}, 'motorBikeGroup': {'type': ['kqRWallFunction;'],
+    'value': ['uniform', '0.24;']}, 'upperWall': {'type': ['slip;']},
+    'frontAndBack': {'type': ['slip;']}})
 
 if __name__ == '__main__':
   unittest.main()
