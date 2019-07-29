@@ -9,8 +9,11 @@ def openfoam(command, case='.'):
     return -1
 
   stdout = subprocess.getoutput('cd ' + case + ' && ' + command)
+  if re.search('Cannot find file "points" in directory "polyMesh"', stdout):
+    print("ERROR: You must first build mesh to get initial conditions data!")
+    return -1
   if re.search('FOAM FATAL ERROR', stdout):
-    print ("ERROR:", command, "failed in", case)
+    print ("ERROR: `", command, "` failed in", case)
     return -1
   if re.search('command not found', stdout):
     print ("ERROR: OpenFOAM not initialized, '", command, "' not found")

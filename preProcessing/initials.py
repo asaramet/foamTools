@@ -62,11 +62,6 @@ def fieldInfo(field, case):
   if patchSummary == -1: return -1
 
   fieldFile = os.path.join(case, '0/' + field)
-  if not os.path.isfile(fieldFile):
-    fieldFile = os.path.join(case, '0/' + field + '.orig')
-  if not os.path.isfile(fieldFile):
-    print("ERROR: Couldn't get the initial conditions file for", field)
-    return -1
   foamDictionary = run.openfoam('foamDictionary ' + fieldFile, case)
   if foamDictionary == -1: return -1
 
