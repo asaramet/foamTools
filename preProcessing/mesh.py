@@ -3,12 +3,14 @@
 import sys, getopt, os
 from string import Template
 
+thisFolder = os.path.dirname(os.path.realpath(__file__))
+
 sys.path.append(sys.path[0] + '/..')
-from libs import get
+from libs import get, run
 
 def help():
   return Template('''
-    Pre-processing an OpenFOAM case folder.
+    Mesh info of an OpenFOAM case folder.
 
     Usage: ${app} [OPTIONS]
 
@@ -17,15 +19,23 @@ def help():
       -f [FOLDER PATH]    Specify case folder as a string "FOLDER PATH"
 
     EXAMPLES:
-      Run pre-processing on '/home/my_case':
+      Collect mesh data on '/home/my_case':
 
         ${app} -f '/home/my_case'
   ''').substitute(app=sys.argv[0])
 
+def stats(case):
+  checkMesh = run.openfoam('checkMesh', case)
+  if checkMesh == -1: #return -1
+    checkMeshDict = os.path.join(thisFolder, '../tests/dicts/checkMesh')
+    with open(checkMeshDict, 'r') as f:
+      checkMesh = f.read()
+  stats = get.multipleStringSegment(checkMesh, 'Mesh stats', '')
+  cells = get.multipleStringSegment(checkMesh, 'Overall number of cells', '')
+  return (stats, cells)
+
 def read(case):
-  zeroFolder = get.caseFolder(case, '0')
-  if zeroFolder == -1: return
-  print("TODO: Just template:", zeroFolder)
+  print (stats(case)[0])
 
 def main(argv):
   caseFolder = "../../cleanCase"

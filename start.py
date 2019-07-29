@@ -7,6 +7,7 @@ from preProcessing import *
 from libs import *
 
 def help():
+  my_case = '/home/my_case'
   return Template('''
     Pre-processing an OpenFOAM case folder.
 
@@ -17,21 +18,26 @@ def help():
       -f [FOLDER PATH]    Specify case folder as a string "FOLDER PATH"
       -c                  Pre-process 'controlDict'
       -i                  Pre-process initial conditions
+      -m                  Collect mesh data
 
     EXAMPLES:
-      Run controlDict pre-processing on '/home/my_case':
+      Run controlDict pre-processing on '${case}':
 
         ${app} -c -f '/home/my_case'
 
-      Scan initial conditions on '/home/my_case':
+      Scan initial conditions on '${case}':
 
-        ${app} -i -f '/home/my_case'
-  ''').substitute(app=sys.argv[0])
+        ${app} -i -f '${case}'
+
+      Collect mesh data in '${case}':
+
+        ${app} -mf '${case}'
+  ''').substitute(app=sys.argv[0], case=my_case)
 
 def main(argv):
   caseFolder = "../cleanCase"
   try:
-    opts, args = getopt.getopt(argv, "f:hci")
+    opts, args = getopt.getopt(argv, "f:hcim")
   except getopt.GetoptError:
     print ("ERROR: Wrong option,", sys.argv[1], "for:", sys.argv[0])
     sys.exit(2)
@@ -47,6 +53,8 @@ def main(argv):
       controlDict.read(caseFolder)
     if opt == "-i":
       initials.read(caseFolder)
+    if opt == "-m":
+      mesh.read(caseFolder)
 
 if __name__ == "__main__":
   main(sys.argv[1:])
