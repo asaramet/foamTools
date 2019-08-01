@@ -28,11 +28,11 @@ class GetMethods(unittest.TestCase):
   with open(testDict, 'r') as f:
     testData = f.read()
 
-  def test_keyword(self):
-    self.assertEqual(get.keyword(self.testDict, 'application'), ['application', 'simpleFoam'])
-    self.assertEqual(get.keyword(self.testDict, 'startTime'), ['startTime', '0'])
-    self.assertEqual(get.keyword(self.testDict, 'app'), [-1, 'not defined'])
-    self.assertEqual(get.keyword('testNonFile', 'application'), -1)
+  def test_keywordInFile(self):
+    self.assertEqual(get.keywordInFile(self.testDict, 'application'), 'simpleFoam')
+    self.assertEqual(get.keywordInFile(self.testDict, 'startTime'), '0')
+    self.assertEqual(get.keywordInFile(self.testDict, 'app'), -1)
+    self.assertEqual(get.keywordInFile('testNonFile', 'application'), -1)
 
   def test_dimensions(self):
     self.assertEqual(get.dimensions('testNonFile'), -1)

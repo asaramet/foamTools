@@ -32,12 +32,16 @@ def help():
       Collect mesh data in '${case}':
 
         ${app} -mf '${case}'
+
+      Collect turbulence and thermophysical models in '${case}':
+
+        ${app} -tf '${case}'
   ''').substitute(app=sys.argv[0], case=my_case)
 
 def main(argv):
   caseFolder = "../cleanCase"
   try:
-    opts, args = getopt.getopt(argv, "f:hcim")
+    opts, args = getopt.getopt(argv, "f:hcimt")
   except getopt.GetoptError:
     print ("ERROR: Wrong option,", sys.argv[1], "for:", sys.argv[0])
     sys.exit(2)
@@ -55,6 +59,8 @@ def main(argv):
       initials.read(caseFolder)
     if opt == "-m":
       mesh.read(caseFolder)
+    if opt == "-t":
+      tModels.read(caseFolder)
 
 if __name__ == "__main__":
   main(sys.argv[1:])

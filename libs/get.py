@@ -27,25 +27,30 @@ def checkRunCompleted(case):
   # return 1 if endTime is defined and folder exists
   controlDict = systemDict(case, 'controlDict')
   if controlDict == -1: return [-1, "no controlDict"]
-  endTime = keyword(controlDict, 'endTime')
-  if endTime[0] == -1: return [-1, "no endTime"]
-  if os.path.isdir(os.path.join(case, endTime[1])):
-    return [1, endTime[1]]
+  endTime = keywordInFile(controlDict, 'endTime')
+  if endTime == -1: return [-1, "no endTime"]
+  if os.path.isdir(os.path.join(case, endTime)):
+    return [1, endTime]
   return [-1, "not completed"]
 
-def keyword(dict, key):
+def keywordInFile(dict, key):
   if not os.path.exists(dict):
     print ("ERROR: ", dict, "not found")
     return -1
   with open(dict, 'r') as file:
-    for line in file:
-      if line.find(key + ' ') != -1:
-        value = line.split()[1]
-        valueSemiColumn = value.find(';')
-        if valueSemiColumn != -1:
-          value = value[:valueSemiColumn]
-        return [key, value]
-  return [-1, "not defined"]
+    text = file.read()
+  return keyword(text, key)
+
+def keyword(text, key):
+  for line in text.split('\n'):
+    if line.find(key + ' ') != -1:
+      value = line.split()[1]
+      valueSemiColumn = value.find(';')
+      if valueSemiColumn != -1:
+        value = value[:valueSemiColumn]
+      return value
+  print (key, 'not defined in')
+  return -1
 
 def powerof(x, power):
   if power == 0: return 1

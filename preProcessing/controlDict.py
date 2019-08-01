@@ -29,8 +29,8 @@ def report(controlDict):
   return Template('''=== controlDict options:
     Application name [application]: ${application}
     Simulation starting from [startFrom]: ${startFrom}\n''').substitute(
-    application = get.keyword(controlDict, 'application')[1],
-    startFrom = get.keyword(controlDict, 'startFrom')[1]
+    application = get.keywordInFile(controlDict, 'application'),
+    startFrom = get.keywordInFile(controlDict, 'startFrom')
   )
 
 def read(case):
