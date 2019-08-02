@@ -45,7 +45,7 @@ class GetMethods(unittest.TestCase):
 
   def test_dictionary(self):
     text = "{\nboundaryField\n  {\nuno {\n   duo {\n trio {}\n }\n }\n quadro 45;\ncinquo ()\n }\nmore;\n}"
-    result = '{\nuno {\nduo {\ntrio {}\n}\n}\nquadro 45;\ncinquo ()\n}\n'
+    result = '{\nuno {\nduo {\ntrio {}\n}\n}\nquadro 45;\ncinquo ()\n}'
     self.assertEqual(get.dictionary(text, 'boundaryField'), result)
 
 class InitialsTest(unittest.TestCase):

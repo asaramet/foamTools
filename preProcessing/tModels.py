@@ -44,7 +44,7 @@ def turbulence(case):
     rasCoeffs = get.dictionary(tProps, modelName + 'Coeffs')
     if rasCoeffs != -1:
       text += "\t" + modelName + " coefficients:\n"
-      for line in rasCoeffs.split('\n')[1:-2]:
+      for line in rasCoeffs.split('\n')[1:-1]:
         data = line.split()
         text += "\t\t" + data[0] + '\t\t' + data[1] + '\n'
 

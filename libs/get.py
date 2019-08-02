@@ -102,7 +102,7 @@ def dictionary(text, name):
     if re.search('{', line) and flag > 0: flag += 1
     if re.search('}', line) and flag > 0: flag -= 1
     if re.search('}', line) and flag == 1:
-      dict += line.strip() + '\n'
+      dict += line.strip()
       break
     dict += line.strip() + '\n'
   return dict
