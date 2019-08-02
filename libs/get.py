@@ -93,3 +93,16 @@ def multipleStringSegment(multistring, start, end):
       elif re.search(end, line): break
     snippet += line + '\n'
   return snippet
+
+def dictionary(text, name):
+  dict, flag = "", -1
+  for line in text.split('\n'):
+    if re.search(name, line) and flag == -1: flag = 0
+    if re.search('{', line) and flag == 0: dict, flag = '', 1
+    if re.search('{', line) and flag > 0: flag += 1
+    if re.search('}', line) and flag > 0: flag -= 1
+    if re.search('}', line) and flag == 1:
+      dict += line.strip() + '\n'
+      break
+    dict += line.strip() + '\n'
+  return dict

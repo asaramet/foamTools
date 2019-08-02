@@ -28,15 +28,34 @@ def turbulence(case):
   tProps = run.openfoam('foamDictionary constant/turbulenceProperties', case)
   if tProps == -1: #return -1
     tPropsDict = os.path.join(thisFolder, '../tests/dicts/tModels')
+    #tPropsDict = os.path.join(thisFolder, '../tests/dicts/lesModel')
     with open(tPropsDict, 'r') as f:
       tProps = f.read()
 
   type = get.keyword(tProps, 'simulationType')
 
-  text = "==> Turbulence models:\n\n"
-  if type != -1: text += "Type of turbulence modelling\t"
-  if type == "RAS": text += "Reynolds-averaged stress (RAS)"
-  return type
+  text = "==> Turbulence model:\n"
+  if type == 'laminar': text += "\tno turbulence models are used."
+  if type == "RAS":
+    modelName = get.keyword(tProps, 'RASModel')
+    text += "\tType:\t\t\t" + modelName + " Reynolds-averaged stress (RAS)\n"
+    text += "\tTurbulence modelling:\t" + get.keyword(tProps, 'turbulence') + "\n"
+
+    rasCoeffs = get.dictionary(tProps, modelName + 'Coeffs')
+    if rasCoeffs != -1:
+      text += "\t" + modelName + " coefficients:\n"
+      for line in rasCoeffs.split('\n')[1:-2]:
+        data = line.split()
+        text += "\t\t" + data[0] + '\t\t' + data[1] + '\n'
+
+    if get.keyword(tProps, 'printCoeffs') == 'on':
+      text += "\tPrint model coeffs to terminal at simulation startup!\n"
+
+  if type == "LES":
+    modelName = get.keyword(tProps, 'LESModel')
+    print (modelName)
+    text += "\tType:\t" + modelName + " large-eddy simulation (LES) or detached-eddy simulation (DES)\n"
+  return text
 
 def transport(case):
   tProps = run.openfoam('foamDictionary constant/transportProperties', case)

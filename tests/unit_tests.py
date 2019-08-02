@@ -43,6 +43,11 @@ class GetMethods(unittest.TestCase):
       '        type            kqRWallFunction;',
       '        value           $internalField;'])
 
+  def test_dictionary(self):
+    text = "{\nboundaryField\n  {\nuno {\n   duo {\n trio {}\n }\n }\n quadro 45;\ncinquo ()\n }\nmore;\n}"
+    result = '{\nuno {\nduo {\ntrio {}\n}\n}\nquadro 45;\ncinquo ()\n}\n'
+    self.assertEqual(get.dictionary(text, 'boundaryField'), result)
+
 class InitialsTest(unittest.TestCase):
   patchSummaryDict = os.path.join(testsFolder, 'dicts/patchSummary')
   with open(patchSummaryDict, 'r') as f:
