@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, getopt, os
+import sys, getopt, os, re, typing
 from string import Template
 
 sys.path.append(sys.path[0] + '/..')
@@ -26,35 +26,68 @@ def help():
 
 def turbulence(case):
   tProps = run.openfoam('foamDictionary constant/turbulenceProperties', case)
-  if tProps == -1: #return -1
-    tPropsDict = os.path.join(thisFolder, '../tests/dicts/tModels')
+  if tProps == -1: return -1
+    #tPropsDict = os.path.join(thisFolder, '../tests/dicts/tModels')
     #tPropsDict = os.path.join(thisFolder, '../tests/dicts/lesModel')
-    with open(tPropsDict, 'r') as f:
-      tProps = f.read()
+    #with open(tPropsDict, 'r') as f:
+    #  tProps = f.read()
 
   type = get.keyword(tProps, 'simulationType')
-
   text = "==> Turbulence model:\n"
-  if type == 'laminar': text += "\tno turbulence models are used."
-  if type == "RAS":
-    modelName = get.keyword(tProps, 'RASModel')
-    text += "\tType:\t\t\t" + modelName + " Reynolds-averaged stress (RAS)\n"
-    text += "\tTurbulence modelling:\t" + get.keyword(tProps, 'turbulence') + "\n"
 
-    rasCoeffs = get.dictionary(tProps, modelName + 'Coeffs')
+  if type == 'laminar': text += "\tno turbulence models are used."
+
+  if type == "RAS":
+    ras = get.dictionary(tProps, "RAS")
+    modelName = get.keyword(ras, 'RASModel')
+    text += "\tType:\t\t\t" + modelName + " Reynolds-averaged stress (RAS)\n"
+
+    rasCoeffs = get.dictionary(ras, modelName + 'Coeffs')
     if rasCoeffs != -1:
       text += "\t" + modelName + " coefficients:\n"
       for line in rasCoeffs.split('\n')[1:-1]:
         data = line.split()
-        text += "\t\t" + data[0] + '\t\t' + data[1] + '\n'
-
-    if get.keyword(tProps, 'printCoeffs') == 'on':
-      text += "\tPrint model coeffs to terminal at simulation startup!\n"
+        text += "\t\t" + data[0] + run.tabs(data[0]) + data[1] + '\n'
 
   if type == "LES":
-    modelName = get.keyword(tProps, 'LESModel')
-    print (modelName)
-    text += "\tType:\t" + modelName + " large-eddy simulation (LES) or detached-eddy simulation (DES)\n"
+    les = get.dictionary(tProps, 'LES')
+    modelName = get.keyword(les, 'LESModel')
+    text += "\tType:\t\t" + modelName + " large-eddy simulation (LES) or detached-eddy simulation (DES)\n"
+    delta = get.keyword(les, 'delta')
+    if delta != -1: text += "\tDelta model:\t" + delta + '\n'
+
+    ignoreKeys = ['delta', 'printCoeffs', 'turbulence', 'LESModel']
+    coeffs, values = [], {}
+    for line in les.split('\n'):
+      if re.search('Coeff', line):
+        coeff = line.split()[0]
+        if coeff not in ignoreKeys and coeff not in coeffs: coeffs.append(coeff)
+      splt = line.split()
+      if len(splt) >= 2:
+        key = splt[0]
+        if re.search(';', splt[1]) and key not in ignoreKeys:
+          value = get.keyword(line, splt[0])
+          if key in values.keys() and value != values[key]:
+            if isinstance(values[key], typing.List):
+              if value not in values[key]: values[key].append(value)
+            else: values[key] = [value, values[key]]
+          else:
+            values[key] = value
+    if coeffs != []:
+      text += "\tDefined coefficients:\n"
+      for cf in coeffs:
+        text += "\t\t" + cf + '\n'
+    if values != {}:
+      text += "\tDefined options:\n"
+      for key in values.keys():
+        text += "\t\t" + key + run.tabs(key) + str(values[key]) + '\n'
+
+  if get.keyword(tProps, 'turbulence') != -1:
+    text += "\tTurbulence modelling:\t" + get.keyword(tProps, 'turbulence') + "\n"
+
+  if get.keyword(tProps, 'printCoeffs') == 'on':
+    text += "\tPrint model coeffs to terminal at simulation startup!\n"
+
   return text
 
 def transport(case):

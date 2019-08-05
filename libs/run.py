@@ -20,6 +20,10 @@ def openfoam(command, case='.'):
     return -1
   return stdout
 
+def tabs(string):
+  if len(string) < 8: return '\t\t'
+  return '\t'
+
 def main():
   print (openfoam('ls', '$HOME'))
 
