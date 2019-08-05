@@ -57,11 +57,11 @@ def powerof(x, power):
   return x + "^" + str(power)
 
 def dimensions(text):
-  for line in text.split('\n'):
-    if line.find('dimensions' + ' ') != -1:
-      return convertDimensions(line)
-  print("ERROR: no 'dimensions' found in", text)
-  return -1
+  dimmLine = line(text, 'dimensions')
+  if dimmLine == -1:
+    print("ERROR: no 'dimensions' found in", text)
+    return -1
+  return convertDimensions(dimmLine)
 
 def convertDimensions(of_dim_line):
   units = ["kg", "m", "s", "K", "mol", "A", "cd"]
