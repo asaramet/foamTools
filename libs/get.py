@@ -59,7 +59,7 @@ def powerof(x, power):
 def dimensions(text):
   dimmLine = line(text, 'dimensions')
   if dimmLine == -1:
-    print("ERROR: no 'dimensions' found in", text)
+    print("ERROR: no 'dimensions' keyword found")
     return -1
   return convertDimensions(dimmLine)
 

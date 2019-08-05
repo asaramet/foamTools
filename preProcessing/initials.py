@@ -79,7 +79,7 @@ def fieldInfo(field, case):
     for patch in walls[section]:
       text += '\n    ' + patch + ':'
       for key, value in field_data[patch].items():
-        text += '\n      ' + key + ':\t\t' + ' '.join(value)
+        text += '\n      ' + key + ':' + run.tabs(key) + ' '.join(value)
   text += '\n==========////==========\n'
   return text
 

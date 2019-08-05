@@ -24,13 +24,13 @@ def tabs(string):
   if len(string) < 8: return '\t\t'
   return '\t'
 
-def main():
-  print (openfoam('ls', '$HOME'))
-
 def ignoreComments(line):
   if re.search('//', line):
     return line.split('//')[0]
   return line
+
+def main():
+  print (openfoam('ls', '$HOME'))
 
 if __name__ == '__main__':
   main()
