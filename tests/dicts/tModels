@@ -36,6 +36,8 @@ FoamFile
     object          transportProperties;
 }
 
-transportModel  Newtonian;
-
-nu              [ 0 2 -1 0 0 0 0 ] 1.5e-05;
+    transportModel  strainRateFunction;
+    strainRateFunctionCoeffs
+    {
+        function polynomial ((0 0.1) (1 1.3));
+    }

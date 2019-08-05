@@ -83,6 +83,11 @@ def line(text, keyword):
     if line.find(keyword) != -1: return line
   return -1
 
+def value(line):
+  for elem in line.split():
+    if elem[-1] == ';': return elem[:-1]
+  return -1
+
 def fileSegment(file, start, end):
   snippet, flag = '', -1
   with open(file, 'r') as f:

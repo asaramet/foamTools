@@ -95,20 +95,53 @@ def turbulence(case):
 
 def transport(case):
   tProps = run.openfoam('foamDictionary constant/transportProperties', case)
-  if tProps == -1: #return -1
-    tPropsDict = os.path.join(thisFolder, '../tests/dicts/tModels')
-    with open(tPropsDict, 'r') as f:
-      tProps = f.read()
+  if tProps == -1: return -1
+    #tPropsDict = os.path.join(thisFolder, '../tests/dicts/tModels')
+    #with open(tPropsDict, 'r') as f:
+    #  tProps = f.read()
 
   text = "==> Viscosity models (transport properties):\n"
   model = get.keyword(tProps, 'transportModel')
 
   if model == 'Newtonian':
-    nuLine = get.line(tProps, 'nu')
+    text += "\tModel\t\tNewtonian\n"
+    nuLine = run.ignoreComments(get.line(tProps, 'nu'))
     if nuLine == -1: text += "ERROR in your transportProperties! 'nu' is not defined"
-    dimms = get.convertDimensions(nuLine)
-    print(dimms)
+    text += "\tViscosity (nu): " + get.value(nuLine) + ' ' + get.convertDimensions(nuLine)
+
+  if model == "BirdCarreau":
+    text += '\tModel\tBird-Carreau\n'
+    text += modelCoeffs(tProps, 'BirdCarreau')
+
+  if model == "powerLaw":
+    text += "\tModel\tPower Law\n"
+    text += modelCoeffs(tProps, 'powerLawCoeffs')
+
+  if model == "HerschelBulkley":
+    text += "\tModel\tHerschel-Bulkley\n"
+    text += modelCoeffs(tProps, 'HerschelBulkleyCoeffs')
+
+  if model == "Casson":
+    text += "\tModel\tCasson\n"
+    text += modelCoeffs(tProps, 'CassonCoeffs')
+
+  if model == "strainRateFunction":
+    text += "\tModel\tgeneral strain-rate function\n"
+    #TODO: // modify function representation (ex: https://cfd.direct/openfoam/user-guide/v7-boundaries/#x25-1840005.2.3.4)
+    text += '\t\t' + get.dictionary(tProps, 'strainRateFunctionCoeffs')[1:-1].strip()
+
   return text
+
+def transpCoeffs(line):
+  name = line.split()[0]
+  value = get.value(line)
+  return "\t\t" + name + '\t' + value + '\t' + get.convertDimensions(line) + "\n"
+
+def modelCoeffs(text, coeffsKey, save=""):
+  coeffs = get.dictionary(text, coeffsKey)[1:-1].strip()
+  for coeff in coeffs.split('\n'):
+    save += transpCoeffs(coeff)
+  return save
 
 def read(case):
   print (turbulence(case))
