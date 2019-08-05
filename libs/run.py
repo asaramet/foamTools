@@ -27,5 +27,10 @@ def tabs(string):
 def main():
   print (openfoam('ls', '$HOME'))
 
+def ignoreComments(line):
+  if re.search('//', line):
+    return line.split('//')[0]
+  return line
+
 if __name__ == '__main__':
   main()

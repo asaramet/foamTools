@@ -26,11 +26,11 @@ def help():
 
 def turbulence(case):
   tProps = run.openfoam('foamDictionary constant/turbulenceProperties', case)
-  if tProps == -1: return -1
-    #tPropsDict = os.path.join(thisFolder, '../tests/dicts/tModels')
+  if tProps == -1: #return -1
+    tPropsDict = os.path.join(thisFolder, '../tests/dicts/tModels')
     #tPropsDict = os.path.join(thisFolder, '../tests/dicts/lesModel')
-    #with open(tPropsDict, 'r') as f:
-    #  tProps = f.read()
+    with open(tPropsDict, 'r') as f:
+      tProps = f.read()
 
   type = get.keyword(tProps, 'simulationType')
   text = "==> Turbulence model:\n"
@@ -46,8 +46,10 @@ def turbulence(case):
     if rasCoeffs != -1:
       text += "\t" + modelName + " coefficients:\n"
       for line in rasCoeffs.split('\n')[1:-1]:
-        data = line.split()
-        text += "\t\t" + data[0] + run.tabs(data[0]) + data[1] + '\n'
+        line = run.ignoreComments(line)
+        coeffData = line.split()
+        if len(coeffData) > 1:
+          text += "\t\t" + coeffData[0] + run.tabs(coeffData[0]) + coeffData[1] + '\n'
 
   if type == "LES":
     les = get.dictionary(tProps, 'LES')
@@ -59,6 +61,7 @@ def turbulence(case):
     ignoreKeys = ['delta', 'printCoeffs', 'turbulence', 'LESModel']
     coeffs, values = [], {}
     for line in les.split('\n'):
+      line = run.ignoreComments(line)
       if re.search('Coeff', line):
         coeff = line.split()[0]
         if coeff not in ignoreKeys and coeff not in coeffs: coeffs.append(coeff)

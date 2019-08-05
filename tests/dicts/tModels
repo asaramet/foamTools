@@ -19,8 +19,9 @@ RAS
       C2          0.31;
       CL          0.231;
       Ceta        701;
-      Ceps2       1.91;
-      sigmaEps    1.31;
+      //Ceps2       1.91;
+
+      sigmaEps    //1.31;
       sigmaK      1.1;
   }
     turbulence      on;

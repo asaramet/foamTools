@@ -28,6 +28,7 @@ def help():
 def getPatches(patchSummary):
   dict = {'patches':[], 'walls':[], 'groups':[]}
   for line in patchSummary.split('\n'):
+    line = run.ignoreComments(line)
     if (re.search("^patch", line)):
       dict['patches'].append(line.split()[2])
     if (re.search("^wall", line)):
@@ -39,6 +40,7 @@ def getPatches(patchSummary):
 def getFields(patchSummary):
   fields = []
   for line in get.multipleStringSegment(patchSummary, '^Valid fields:', '').split('\n')[1:-1]:
+    line = run.ignoreComments(line)
     fields.append(line.split('\t')[1])
   return fields
 
@@ -46,6 +48,7 @@ def fieldData(fieldDict):
   data = get.multipleStringSegment(fieldDict, 'boundaryField', '^}')
   patches, patch = [], ''
   for line in data.split('\n')[2:-1]:
+    line = run.ignoreComments(line)
     if re.search('{', line):
       patches.append(patch.strip())
     patch = line
@@ -54,6 +57,7 @@ def fieldData(fieldDict):
   for patch in patches:
     patch_data[patch] = {}
     for item in get.multipleStringSegment(data, patch, '}').split('\n')[2:-1]:
+      item = run.ignoreComments(item)
       patch_data[patch][item.split()[0]] = item.split()[1:]
   return patch_data
 
@@ -86,6 +90,7 @@ def collectData(case):
   text = '==> Initial conditions:'
   text += '\n==========////==========\n'
   for field in getFields(patchSummary):
+    field = run.ignoreComments(field)
     text += fieldInfo(field, case)
 
   return text
