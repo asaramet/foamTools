@@ -57,17 +57,30 @@ def powerof(x, power):
   return x + "^" + str(power)
 
 def dimensions(text):
-  units = ["kg", "m", "s", "K", "mol", "A", "cd"]
   for line in text.split('\n'):
     if line.find('dimensions' + ' ') != -1:
-      values = re.sub('[;\[\]]','', line[len('dimensions'):].strip()).split()
-      mesure, index = "", 0
-      while index < len(values):
-        power_str = powerof(units[index], int(values[index]))
-        if power_str != 1: mesure += power_str + ' '
-        index += 1
-      return mesure
+      return convertDimensions(line)
   print("ERROR: no 'dimensions' found in", text)
+  return -1
+
+def convertDimensions(of_dim_line):
+  units = ["kg", "m", "s", "K", "mol", "A", "cd"]
+  dimms, flag = [], -1
+  for elem in of_dim_line.split():
+    if elem == '[': flag = 0
+    if flag == 0: dimms.append(elem)
+    if elem == ']': flag = 1
+  values = dimms[1:-1]
+  mesure, index = "", 0
+  while index < len(values):
+    power_str = powerof(units[index], int(values[index]))
+    if power_str != 1: mesure += power_str + ' '
+    index += 1
+  return mesure
+
+def line(text, keyword):
+  for line in text.split('\n'):
+    if line.find(keyword) != -1: return line
   return -1
 
 def fileSegment(file, start, end):

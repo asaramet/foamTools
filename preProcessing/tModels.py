@@ -26,11 +26,11 @@ def help():
 
 def turbulence(case):
   tProps = run.openfoam('foamDictionary constant/turbulenceProperties', case)
-  if tProps == -1: #return -1
-    tPropsDict = os.path.join(thisFolder, '../tests/dicts/tModels')
+  if tProps == -1: return -1
+    #tPropsDict = os.path.join(thisFolder, '../tests/dicts/tModels')
     #tPropsDict = os.path.join(thisFolder, '../tests/dicts/lesModel')
-    with open(tPropsDict, 'r') as f:
-      tProps = f.read()
+    #with open(tPropsDict, 'r') as f:
+      #tProps = f.read()
 
   type = get.keyword(tProps, 'simulationType')
   text = "==> Turbulence model:\n"
@@ -99,11 +99,20 @@ def transport(case):
     tPropsDict = os.path.join(thisFolder, '../tests/dicts/tModels')
     with open(tPropsDict, 'r') as f:
       tProps = f.read()
-  return tProps
+
+  text = "==> Viscosity models (transport properties):\n"
+  model = get.keyword(tProps, 'transportModel')
+
+  if model == 'Newtonian':
+    nuLine = get.line(tProps, 'nu')
+    if nuLine == -1: text += "ERROR in your transportProperties! 'nu' is not defined"
+    dimms = get.convertDimensions(nuLine)
+    print(dimms)
+  return text
 
 def read(case):
   print (turbulence(case))
-  #print ('.............\n', transport(case))
+  print ('.............\n', transport(case))
 
 def main(argv):
   caseFolder = "../../cleanCase"
