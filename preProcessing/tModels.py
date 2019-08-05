@@ -43,7 +43,7 @@ def turbulence(case):
     text += "\tType:\t\t\t" + modelName + " Reynolds-averaged stress (RAS)\n"
 
     rasCoeffs = get.dictionary(ras, modelName + 'Coeffs')
-    if rasCoeffs != -1:
+    if rasCoeffs != "":
       text += "\t" + modelName + " coefficients:\n"
       for line in rasCoeffs.split('\n')[1:-1]:
         line = run.ignoreComments(line)

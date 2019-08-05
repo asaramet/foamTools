@@ -105,4 +105,5 @@ def dictionary(text, name):
       dict += line.strip()
       break
     dict += line.strip() + '\n'
+    if flag == -1: dict = ""
   return dict
