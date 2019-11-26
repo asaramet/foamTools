@@ -3,8 +3,8 @@
 import sys, getopt, os
 from string import Template
 
-from preProcessing import *
-from libs import *
+from preProcessing import controlDict, initials, mesh, tModels
+from libs import get, run
 
 def help():
   my_case = '/home/my_case'
